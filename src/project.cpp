@@ -1,5 +1,3 @@
-
-//===- SVF-Project -------------------------------------//
 //
 //                     SVF: Static Value-Flow Analysis
 //
@@ -20,11 +18,13 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //===-----------------------------------------------------------------------===//
+
 #include "SVF-LLVM/LLVMUtil.h"
+#include "SVF-LLVM/ICFGBuilder.h"
+#include "SVF-LLVM/SVFIRBuilder.h"
 
 #include <iostream>
 #include <vector>
-#include <set>
 
 using namespace llvm;
 using namespace std;
@@ -43,6 +43,13 @@ int main(int argc, char ** argv) {
                                 "Whole Program Points-to Analysis\n");
 
     SVFModule* svfModule = LLVMModuleSet::getLLVMModuleSet()->buildSVFModule(moduleNameVec);
+    SVFIRBuilder *builder = new SVFIRBuilder(svfModule);
+    SVFIR* pag = builder->build();
+    ICFG* ICFG = pag->getICFG();
+    
+    // The paths in your output should start and end at these nodes
+    FunEntryICFGNode* start = ICFG->getFunEntryICFGNode(svfModule->getSVFFunction("src"));
+    FunEntryICFGNode* end = ICFG->getFunEntryICFGNode(svfModule->getSVFFunction("sink"));
 
     return 0;
 }
