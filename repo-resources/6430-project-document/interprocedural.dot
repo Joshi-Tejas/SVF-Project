@@ -1,0 +1,12 @@
+digraph G {
+
+  node [shape = rectangle];
+  main->src
+  src->init
+  src->sink
+  
+  main[label="main\nx = 0\nsrc()\n"]
+  src[color="green",label="src\nif x == 3:\n      sink()\nelse:        \n    init() \n     sink()"]
+  init[label="init\nx = 3"]
+  sink[color="red",label="sink\n"]
+}
