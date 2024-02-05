@@ -22,6 +22,8 @@
 #include "SVF-LLVM/LLVMUtil.h"
 #include "SVF-LLVM/ICFGBuilder.h"
 #include "SVF-LLVM/SVFIRBuilder.h"
+#include "Util/CommandLine.h"
+#include "Util/Options.h"
 
 #include <iostream>
 #include <vector>
@@ -51,5 +53,10 @@ int main(int argc, char ** argv) {
     FunEntryICFGNode* start = ICFG->getFunEntryICFGNode(svfModule->getSVFFunction("src"));
     FunEntryICFGNode* end = ICFG->getFunEntryICFGNode(svfModule->getSVFFunction("sink"));
 
+
+    // Shutdown & Cleanup
+    SVFIR::releaseSVFIR();
+    SVF::LLVMModuleSet::releaseLLVMModuleSet();
+    llvm::llvm_shutdown();
     return 0;
 }
