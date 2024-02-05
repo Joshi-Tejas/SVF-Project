@@ -131,7 +131,7 @@ Some caveats:
     
     \item You do not need to handle indirect function calls
     \item You do not need to handle recursion in callstacks (A function will not call itself anywhere in its body or its sub-functions).
-    \item You may end analysis at the \sink () entry node. Paths going through this and eventually reaching the \sink () entry node again are not needed.
+    \item You may end analysis at the \sink () entry node. Paths going through this and eventually reaching the \sink () entry node again do not need to be reported.
     
     
 \end{enumerate}
