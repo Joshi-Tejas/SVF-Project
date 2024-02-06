@@ -1,4 +1,3 @@
-//===- svf-ex.cpp -- A driver example of SVF-------------------------------------//
 //
 //                     SVF: Static Value-Flow Analysis
 //
@@ -6,54 +5,56 @@
 //
 
 // This program is free software: you can redistribute it and/or modify
-// it under the terms of the GNU Affero General Public License as published by
+// it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 
 // This program is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU Affero General Public License for more details.
+// GNU General Public License for more details.
 
-// You should have received a copy of the GNU Affero General Public License
+// You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 //===-----------------------------------------------------------------------===//
 
-/*
- // A driver program of SVF including usages of SVF APIs
- //
- // Author: Yulei Sui,
- */
-
 #include "SVF-LLVM/LLVMUtil.h"
-#include "AbstractExecution/SVFIR2ItvExeState.h"
-#include "Graphs/SVFG.h"
-#include "WPA/Andersen.h"
+#include "SVF-LLVM/ICFGBuilder.h"
 #include "SVF-LLVM/SVFIRBuilder.h"
 #include "Util/CommandLine.h"
 #include "Util/Options.h"
 
+#include <iostream>
+#include <vector>
+
+using namespace llvm;
 using namespace std;
 using namespace SVF;
 
-int main(int argc, char ** argv)
-{
-    // Setup
+static llvm::cl::opt<std::string> InputFilename(cl::Positional,
+        llvm::cl::desc("<input bitcode>"), llvm::cl::init("-"));
+
+int main(int argc, char ** argv) {
+
+    int arg_num = 0;
+    char **arg_value = new char*[argc];
     std::vector<std::string> moduleNameVec;
-    moduleNameVec = OptionBase::parseOptions(
-                        argc, argv, "Whole Program Points-to Analysis", "[options] <input-bitcode...>"
-                    );
+    SVF::LLVMUtil::processArguments(argc, argv, arg_num, arg_value, moduleNameVec);
+    cl::ParseCommandLineOptions(arg_num, arg_value,
+                                "Whole Program Points-to Analysis\n");
 
     SVFModule* svfModule = LLVMModuleSet::getLLVMModuleSet()->buildSVFModule(moduleNameVec);
     SVFIRBuilder *builder = new SVFIRBuilder(svfModule);
     SVFIR* pag = builder->build();
     ICFG* ICFG = pag->getICFG();
-    ICFG->dump("icfg");
     
+    // The paths in your output should start and end at these nodes
+    FunEntryICFGNode* start = ICFG->getFunEntryICFGNode(svfModule->getSVFFunction("src"));
+    FunEntryICFGNode* end = ICFG->getFunEntryICFGNode(svfModule->getSVFFunction("sink"));
 
-    // Shutdown
-    AndersenWaveDiff::releaseAndersenWaveDiff();
+
+    // Shutdown & Cleanup
     SVFIR::releaseSVFIR();
     SVF::LLVMModuleSet::releaseLLVMModuleSet();
     llvm::llvm_shutdown();
