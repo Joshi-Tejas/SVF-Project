@@ -45,14 +45,6 @@ int main(int argc, char ** argv) {
                                 "Whole Program Points-to Analysis\n");
 
     SVFModule* svfModule = LLVMModuleSet::getLLVMModuleSet()->buildSVFModule(moduleNameVec);
-    SVFIRBuilder *builder = new SVFIRBuilder(svfModule);
-    SVFIR* pag = builder->build();
-    ICFG* ICFG = pag->getICFG();
-    
-    // The paths in your output should start and end at these nodes
-    FunEntryICFGNode* start = ICFG->getFunEntryICFGNode(svfModule->getSVFFunction("src"));
-    FunEntryICFGNode* end = ICFG->getFunEntryICFGNode(svfModule->getSVFFunction("sink"));
-
 
     // Shutdown & Cleanup
     SVFIR::releaseSVFIR();

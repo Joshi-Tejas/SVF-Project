@@ -1,8 +1,10 @@
-USAGE_STR="USAGE: ./test.sh [path/to/test.bc]"
-
-if [ $# -eq 0 ]
-  then
-    echo $USAGE_STR
-  else
-    ./bin/svf-project $1 > out.txt
+./bin/project3  tests/test1.bc > out.txt
+if [ -z $(grep "Reachable" out.txt) ]; then
+    echo "test1 error"
 fi
+
+./bin/project3  tests/test2.bc > out.txt
+if [ -z $(grep "Reachable" out.txt) ]; then
+    echo "test2 error"
+fi
+
